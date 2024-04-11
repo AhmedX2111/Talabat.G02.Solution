@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Talabat.Core.Repositories.Contract;
+using Talabat.Repository;
 using Talabat.Repository.Data;
 
 namespace Talabat.APIS
@@ -26,9 +28,11 @@ namespace Talabat.APIS
 			{
 				options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
 			});
-			#endregion
 
-			var app = webApplicationBuilder.Build();
+            webApplicationBuilder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            #endregion
+
+            var app = webApplicationBuilder.Build();
 
             //Ask CLR for creating object from DBContext explicitly
             using var scope = app.Services.CreateScope();
