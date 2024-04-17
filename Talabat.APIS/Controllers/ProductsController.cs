@@ -31,7 +31,10 @@ namespace Talabat.APIS.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = await _productsRepo.GetAsync(id);
+            var spec = new ProductWithBrandAndCategorySpecifications(id);
+
+            var product = await _productsRepo.GetWithSpecAsync(spec);
+
             if (product is null)
                 return NotFound(new { Message = "Not Found", StatusCode = 404 }); //404
 
