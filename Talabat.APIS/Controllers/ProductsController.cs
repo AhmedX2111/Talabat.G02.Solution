@@ -7,9 +7,9 @@ namespace Talabat.APIS.Controllers
 {
     public class ProductsController : BaseApiController
     {
-        private readonly IGenericRepository<Product> _productsRepo;
+        private readonly IGenericInfrastructure<Product> _productsRepo;
 
-        public ProductsController(IGenericRepository<Product> productsRepo)
+        public ProductsController(IGenericInfrastructure<Product> productsRepo)
         {
             _productsRepo = productsRepo;
         }
