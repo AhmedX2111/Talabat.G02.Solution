@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Talabat.Core.Entities;
 
-namespace Talabat.Repository.Data
+namespace Talabat.Infrastructure.Data
 {
     public class StoreContext : DbContext
     {
@@ -17,10 +17,7 @@ namespace Talabat.Repository.Data
 
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseLazyLoadingProxies(true);
-        }
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

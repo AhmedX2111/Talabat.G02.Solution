@@ -18,12 +18,12 @@ namespace Talabat.Core.Entities
 
         public int BrandId { get; set; }  // Fpregin Key Column => ProductBrand
 
-        public virtual ProductBrand Brand { get; set; }  // Navigational Property [ONE]
+        public ProductBrand Brand { get; set; }  // Navigational Property [ONE]
 
 
 
         public int CategoryId { get; set; } // Fpregin Key Column => productCategory
 
-        public virtual ProductCategory Category { get; set; } // Navigational Property [ONE]
+        public ProductCategory Category { get; set; } // Navigational Property [ONE]
     }
 }
