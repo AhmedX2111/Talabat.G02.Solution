@@ -8,7 +8,7 @@ using Talabat.Core.Specifications;
 
 namespace Talabat.Core.Repositories.Contract
 {
-    public interface IGenericInfrastructure<T> where T : BaseEntity
+    public interface IGenericRepository<T> where T : BaseEntity
     {
 
         Task<IEnumerable<T>> GetAllAsync();

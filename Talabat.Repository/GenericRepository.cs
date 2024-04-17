@@ -11,7 +11,7 @@ using Talabat.Infrastructure.Data;
 
 namespace Talabat.Infrastructure
 {
-    public class GenericInfrastructure<T> : IGenericInfrastructure<T> where T : BaseEntity
+    public class GenericInfrastructure<T> : IGenericRepository<T> where T : BaseEntity
     {
         private readonly StoreContext _dbContext;
 

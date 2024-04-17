@@ -29,7 +29,7 @@ namespace Talabat.APIS
 				options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
 			});
 
-            webApplicationBuilder.Services.AddScoped(typeof(IGenericInfrastructure<>), typeof(GenericInfrastructure<>));
+            webApplicationBuilder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericInfrastructure<>));
             #endregion
 
             var app = webApplicationBuilder.Build();
