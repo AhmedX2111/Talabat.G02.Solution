@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
 using Talabat.APIS.Errors;
+using Talabat.APIS.Extensions;
 using Talabat.APIS.Helpers;
 using Talabat.APIS.Middelwares;
 using Talabat.Core.Repositories.Contract;
@@ -27,35 +28,15 @@ namespace Talabat.APIS
 			// Register Required Web APIS Services to the DI Container
 
 
-			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-			webApplicationBuilder.Services.AddEndpointsApiExplorer();
-			webApplicationBuilder.Services.AddSwaggerGen(); 
+			webApplicationBuilder.Services.AddSwaggerService();
 
 			webApplicationBuilder.Services.AddDbContext<StoreContext>(options =>
 			{
 				options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
 			});
 
-            webApplicationBuilder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericInfrastructure<>));
+            webApplicationBuilder.Services.AddApplicationsService();
 
-			webApplicationBuilder.Services.AddAutoMapper(typeof(MappingProfiles));
-
-            webApplicationBuilder.Services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = (actionContext) =>
-                {
-                    var errors = actionContext.ModelState.Where(P => P.Value.Errors.Count > 0)
-                                                         .SelectMany(P => P.Value.Errors)
-                                                         .Select(E => E.ErrorMessage)
-                                                         .ToList();
-                    var response = new ApiValidationErrorResponse()
-                    {
-                        Errors = errors
-                    };
-                    return new BadRequestObjectResult(response);
-                };
-            }
-            );
             #endregion
 
             var app = webApplicationBuilder.Build();
@@ -82,34 +63,34 @@ namespace Talabat.APIS
             }
 
             #region Configure Kestrel MiddleWares
-            //app.UseMiddleware<ExceptionMiddleware>();
+            app.UseMiddleware<ExceptionMiddleware>();
             // Configure the HTTP request pipeline.
 
-            app.Use(async (httpContext, _next) =>
-            {
-                try
-                {
-                    //take an action with the request
-                    await _next.Invoke(httpContext); // go to next middleware
-                                                     //take an action with the response
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex.Message); // development environment
-                    httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    httpContext.Response.ContentType = "application/json";
-                    var response = app.Environment.IsDevelopment() ? new ApiExceptionResponse((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace.ToString()) :
-                    new ApiExceptionResponse((int)HttpStatusCode.InternalServerError);
-                    var options = new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-                    var json = JsonSerializer.Serialize(response, options);
-                    await httpContext.Response.WriteAsync(json);
-                }
-            });
+            ///app.Use(async (httpContext, _next) =>
+            ///{
+            ///    try
+            ///    {
+            ///        //take an action with the request
+            ///        await _next.Invoke(httpContext); // go to next middleware
+            ///                                         //take an action with the response
+            ///    }
+            ///    catch (Exception ex)
+            ///    {
+            ///        logger.LogError(ex.Message); // development environment
+            ///        httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            ///        httpContext.Response.ContentType = "application/json";
+            ///        var response = app.Environment.IsDevelopment() ? new ApiExceptionResponse((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace.ToString()) :
+            ///        new ApiExceptionResponse((int)HttpStatusCode.InternalServerError);
+            ///        var options = new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            ///        var json = JsonSerializer.Serialize(response, options);
+            ///        await httpContext.Response.WriteAsync(json);
+            ///    }
+            ///});
 
             if (app.Environment.IsDevelopment())
 			{
-				app.UseSwagger();
-				app.UseSwaggerUI();
+                // app.UseDeveloperExceptionPage();
+				app.UseSwaggerMiddleware();
 			}
 
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
