@@ -63,29 +63,29 @@ namespace Talabat.APIS
             }
 
             #region Configure Kestrel MiddleWares
-            app.UseMiddleware<ExceptionMiddleware>();
+            //app.UseMiddleware<ExceptionMiddleware>();
             // Configure the HTTP request pipeline.
 
-            ///app.Use(async (httpContext, _next) =>
-            ///{
-            ///    try
-            ///    {
-            ///        //take an action with the request
-            ///        await _next.Invoke(httpContext); // go to next middleware
-            ///                                         //take an action with the response
-            ///    }
-            ///    catch (Exception ex)
-            ///    {
-            ///        logger.LogError(ex.Message); // development environment
-            ///        httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            ///        httpContext.Response.ContentType = "application/json";
-            ///        var response = app.Environment.IsDevelopment() ? new ApiExceptionResponse((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace.ToString()) :
-            ///        new ApiExceptionResponse((int)HttpStatusCode.InternalServerError);
-            ///        var options = new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-            ///        var json = JsonSerializer.Serialize(response, options);
-            ///        await httpContext.Response.WriteAsync(json);
-            ///    }
-            ///});
+           app.Use(async (httpContext, _next) =>
+           {
+               try
+               {
+                   //take an action with the request
+                   await _next.Invoke(httpContext); // go to next middleware
+                                                    //take an action with the response
+               }
+               catch (Exception ex)
+               {
+                   logger.LogError(ex.Message); // development environment
+                   httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                   httpContext.Response.ContentType = "application/json";
+                   var response = app.Environment.IsDevelopment() ? new ApiExceptionResponse((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace.ToString()) :
+                   new ApiExceptionResponse((int)HttpStatusCode.InternalServerError);
+                   var options = new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+                   var json = JsonSerializer.Serialize(response, options);
+                   await httpContext.Response.WriteAsync(json);
+               }
+           });
 
             if (app.Environment.IsDevelopment())
 			{
