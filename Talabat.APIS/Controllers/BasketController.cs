@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Talabat.APIS.Dtos;
 using Talabat.APIS.Errors;
 using Talabat.Core.Entities;
 using Talabat.Core.Repositories.Contract;
@@ -9,9 +11,12 @@ namespace Talabat.APIS.Controllers
     public class BasketController : BaseApiController
     {
         private readonly IBasketRepository _basketRepository;
-        public BasketController(IBasketRepository basketRepository)
+        private readonly IMapper _mapper;
+
+        public BasketController(IBasketRepository basketRepository, IMapper mapper)
         {
             _basketRepository = basketRepository;
+            _mapper = mapper;
         }
 
         [HttpGet] //GET : /api/basket?id=
@@ -22,10 +27,13 @@ namespace Talabat.APIS.Controllers
         }
 
         [HttpPost] //POST : /api/basket
-        public async Task<ActionResult<CustomerBasket>> UpdateBasket(CustomerBasket basket)
+        public async Task<ActionResult<CustomerBasket>> UpdateBasket(CustomerBasketDto basket)
         {
-            var createdOrUpdatedBasket = await _basketRepository.UpdateBasketAsync(basket);
-            if (createdOrUpdatedBasket is null) { return BadRequest(new ApiResponse(400)); }
+            var mappedBasket = _mapper.Map<CustomerBasketDto, CustomerBasket>(basket);
+
+            var createdOrUpdatedBasket = await _basketRepository.UpdateBasketAsync(mappedBasket);
+            if (createdOrUpdatedBasket is null)  return BadRequest(new ApiResponse(400)); 
+
             return Ok(createdOrUpdatedBasket);
         }
         [HttpDelete] //DELETE : /api/basket?id
