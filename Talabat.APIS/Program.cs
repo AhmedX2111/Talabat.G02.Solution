@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
+using Microsoft.AspNetCore.Hosting; // Add this for IWebHostEnvironment
 using System.Net;
 using System.Text.Json;
 using Talabat.APIS.Errors;
