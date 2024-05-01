@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,6 +9,7 @@ using Talabat.APIS.Errors;
 using Talabat.APIS.Extensions;
 using Talabat.APIS.Helpers;
 using Talabat.APIS.Middelwares;
+using Talabat.Core.Entities.Identity;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Infrastructure;
 using Talabat.Infrastructure._Identity;
@@ -50,9 +52,12 @@ namespace Talabat.APIS
 				var connection = webApplicationBuilder.Configuration.GetConnectionString("Redis");
 				return ConnectionMultiplexer.Connect(connection);
 			});
-            #endregion
 
-            var app = webApplicationBuilder.Build();
+			webApplicationBuilder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+				                 .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+			#endregion
+
+			var app = webApplicationBuilder.Build();
 
             //Ask CLR for creating object from DBContext explicitly
             #region Apply All Pending Migrations [Update-Database] and Data Seeding
@@ -74,7 +79,10 @@ namespace Talabat.APIS
                 await StoreContextSeed.SeedAsync(_dbContext); // Data Seeding
 
                 await _identityDbContext.Database.MigrateAsync();
-            }
+
+				var _userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+				await ApplicationIdentityContextSeed.SeedUsersAsync(_userManager);
+			}
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error has been occured during applying the migration");
