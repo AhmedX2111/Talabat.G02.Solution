@@ -55,10 +55,7 @@ namespace Talabat.APIS
 				return ConnectionMultiplexer.Connect(connection);
 			});
 
-			webApplicationBuilder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-				                 .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
-			webApplicationBuilder.Services.AddScoped(typeof(IAuthService), typeof(AuthService));
-
+			webApplicationBuilder.Services.AddAuthServices(webApplicationBuilder.Configuration);
 			#endregion
 
 			var app = webApplicationBuilder.Build();
@@ -90,15 +87,17 @@ namespace Talabat.APIS
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error has been occured during applying the migration");
-            } 
-            #endregion
+            }
+			#endregion
 
-            #region Configure Kestrel MiddleWares
-            //app.UseMiddleware<ExceptionMiddleware>();
-            // Configure the HTTP request pipeline.
+			#region Configure Kestrel MiddleWares
+			//app.UseMiddleware<ExceptionMiddleware>();
+			// Configure the HTTP request pipeline.
+			app.UseAuthentication();
+			app.UseAuthorization();
 
-            app.Use(async (httpContext, _next) =>
-           {
+			app.Use(async (httpContext, _next) =>
+            {
                try
                {
                    //take an action with the request
@@ -116,7 +115,7 @@ namespace Talabat.APIS
                    var json = JsonSerializer.Serialize(response, options);
                    await httpContext.Response.WriteAsync(json);
                }
-           });
+            });
 
             if (app.Environment.IsDevelopment())
 			{
