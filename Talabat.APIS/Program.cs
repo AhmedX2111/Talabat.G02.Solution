@@ -17,6 +17,7 @@ using Talabat.Infrastructure;
 using Talabat.Infrastructure._Identity;
 using Talabat.Infrastructure.Data;
 using Talabat.Service.AuthService;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Talabat.APIS
 {
