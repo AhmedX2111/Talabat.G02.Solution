@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services.Contract\" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.4" />
   </ItemGroup>
 
 </Project>

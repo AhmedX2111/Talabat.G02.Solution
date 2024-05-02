@@ -1,15 +1,23 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using StackExchange.Redis;
 using System.Net;
 using System.Text.Json;
 using Talabat.APIS.Errors;
 using Talabat.APIS.Extensions;
 using Talabat.APIS.Helpers;
 using Talabat.APIS.Middelwares;
+using Talabat.Core.Entities.Identity;
 using Talabat.Core.Repositories.Contract;
+using Talabat.Core.Services.Contract;
 using Talabat.Infrastructure;
+using Talabat.Infrastructure._Identity;
 using Talabat.Infrastructure.Data;
+using Talabat.Service.AuthService;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Talabat.APIS
 {
@@ -24,29 +32,52 @@ namespace Talabat.APIS
 			#region Configure Services
 			// Add services to the DI container.
 
-			webApplicationBuilder.Services.AddControllers();
+			webApplicationBuilder.Services.AddControllers().AddNewtonsoftJson(options =>
+			{
+				options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+			});
 			// Register Required Web APIS Services to the DI Container
 
-
 			webApplicationBuilder.Services.AddSwaggerService();
+
+            webApplicationBuilder.Services.AddApplicationsService();
 
 			webApplicationBuilder.Services.AddDbContext<StoreContext>(options =>
 			{
 				options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
 			});
 
-            webApplicationBuilder.Services.AddApplicationsService();
 
-            #endregion
+			webApplicationBuilder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
+			{
+				options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("IdentityConnection"));
+			});
 
-            var app = webApplicationBuilder.Build();
+
+			webApplicationBuilder.Services.AddSingleton<IConnectionMultiplexer>((serviceProvides) =>
+			{
+				var connection = webApplicationBuilder.Configuration.GetConnectionString("Redis");
+				return ConnectionMultiplexer.Connect(connection);
+			});
+
+			webApplicationBuilder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+				                 .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+
+			webApplicationBuilder.Services.AddAuthServices(webApplicationBuilder.Configuration);
+
+			#endregion
+
+			var app = webApplicationBuilder.Build();
 
             //Ask CLR for creating object from DBContext explicitly
+            #region Apply All Pending Migrations [Update-Database] and Data Seeding
             using var scope = app.Services.CreateScope();
 
             var services = scope.ServiceProvider;
 
             var _dbContext = services.GetRequiredService<StoreContext>();
+
+            var _identityDbContext = services.GetRequiredService<ApplicationIdentityDbContext>();
 
             var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
@@ -56,18 +87,26 @@ namespace Talabat.APIS
                 await _dbContext.Database.MigrateAsync(); // Update-Database
 
                 await StoreContextSeed.SeedAsync(_dbContext); // Data Seeding
-            }
+
+                await _identityDbContext.Database.MigrateAsync();
+
+				var _userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+				await ApplicationIdentityContextSeed.SeedUsersAsync(_userManager);
+			}
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error has been occured during applying the migration");
             }
+			#endregion
 
-            #region Configure Kestrel MiddleWares
-            //app.UseMiddleware<ExceptionMiddleware>();
-            // Configure the HTTP request pipeline.
+			#region Configure Kestrel MiddleWares
+			//app.UseMiddleware<ExceptionMiddleware>();
+			// Configure the HTTP request pipeline.
+			app.UseAuthentication();
+			app.UseAuthorization();
 
-           app.Use(async (httpContext, _next) =>
-           {
+			app.Use(async (httpContext, _next) =>
+            {
                try
                {
                    //take an action with the request
@@ -85,7 +124,7 @@ namespace Talabat.APIS
                    var json = JsonSerializer.Serialize(response, options);
                    await httpContext.Response.WriteAsync(json);
                }
-           });
+            });
 
             if (app.Environment.IsDevelopment())
 			{
