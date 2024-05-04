@@ -14,10 +14,12 @@ using Talabat.Core.Entities.Identity;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Core.Services.Contract;
 using Talabat.Infrastructure;
+using Talabat.Infrastructure.Data;
 using Talabat.Infrastructure._Identity;
 using Talabat.Infrastructure.Data;
 using Talabat.Service.AuthService;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using StoreContextSeed = Talabat.Infrastructure.Data.StoreContextSeed;
 
 namespace Talabat.APIS
 {
