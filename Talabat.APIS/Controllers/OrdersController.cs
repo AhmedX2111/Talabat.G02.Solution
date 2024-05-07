@@ -34,6 +34,16 @@ namespace Talabat.APIS.Controllers
 
 			return Ok(order);
 		}
+		[HttpGet]
+		public async Task<ActionResult<IReadOnlyList<Order>>> GetOrderForUser()
+		{
+
+			var email = User.FindFirst(ClaimTypes.Email).Value;
+
+			var orders = await _orderService.GetOrdersForUserAsync(email);
+
+			return Ok(orders);
+		}
 	}
 }   
 
