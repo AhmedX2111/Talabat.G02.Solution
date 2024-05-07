@@ -16,7 +16,7 @@ namespace Talabat.Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ShortName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ShortDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShortDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Cost = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
                     DeliveryTime = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },

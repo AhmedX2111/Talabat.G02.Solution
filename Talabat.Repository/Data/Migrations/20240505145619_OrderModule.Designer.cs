@@ -12,7 +12,7 @@ using Talabat.Infrastructure.Data;
 namespace Talabat.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20240504153421_OrderModule")]
+    [Migration("20240505145619_OrderModule")]
     partial class OrderModule
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,7 +40,6 @@ namespace Talabat.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ShortDescription")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ShortName")
