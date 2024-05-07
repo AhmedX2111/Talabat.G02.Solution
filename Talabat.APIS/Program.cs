@@ -1,23 +1,14 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using System.Net;
 using System.Text.Json;
 using Talabat.APIS.Errors;
 using Talabat.APIS.Extensions;
-using Talabat.APIS.Helpers;
-using Talabat.APIS.Middelwares;
 using Talabat.Core.Entities.Identity;
-using Talabat.Core.Repositories.Contract;
-using Talabat.Core.Services.Contract;
-using Talabat.Infrastructure;
-using Talabat.Infrastructure.Data;
 using Talabat.Infrastructure._Identity;
 using Talabat.Infrastructure.Data;
-using Talabat.Service.AuthService;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using StoreContextSeed = Talabat.Infrastructure.Data.StoreContextSeed;
 
