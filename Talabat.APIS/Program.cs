@@ -53,9 +53,6 @@ namespace Talabat.APIS
 				return ConnectionMultiplexer.Connect(connection);
 			});
 
-			webApplicationBuilder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-				                 .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
-
 			webApplicationBuilder.Services.AddAuthServices(webApplicationBuilder.Configuration);
 
 			#endregion
