@@ -16,6 +16,9 @@ using Talabat.Core.Repositories.Contract;
 using Talabat.Core.Services.Contract;
 using Talabat.Infrastructure;
 using Talabat.Service.AuthService;
+using Talabat.Core;
+using Talabat.Service.OrderService;
+using Talabat.Service.ProductService;
 
 namespace Talabat.APIS.Extensions
 {
@@ -24,7 +27,14 @@ namespace Talabat.APIS.Extensions
         public static IServiceCollection AddApplicationsService(this IServiceCollection services)
         {
             services.AddScoped<ExceptionMiddleware>();
-            services.AddScoped(typeof(IBasketRepository), typeof(BasketRepository));
+
+			services.AddScoped<IProductService, ProductService>();
+
+			services.AddScoped<IOrderService, OrderService>();
+
+			services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+			services.AddScoped(typeof(IBasketRepository), typeof(BasketRepository));
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericInfrastructure<>));
 
