@@ -56,12 +56,12 @@ namespace Talabat.APIS
 			webApplicationBuilder.Services.AddAuthServices(webApplicationBuilder.Configuration);
 
 			webApplicationBuilder.Services.AddCors(options =>
-			{
+			 {
 				options.AddPolicy("MyPolicy", policyOptions =>
 				{
 					policyOptions.AllowAnyHeader().AllowAnyMethod().WithOrigins(webApplicationBuilder.Configuration["FrontBaseUrl"]);
 				});
-			});
+			 });
 
 			#endregion
 
@@ -100,8 +100,7 @@ namespace Talabat.APIS
 			#region Configure Kestrel MiddleWares
 			//app.UseMiddleware<ExceptionMiddleware>();
 			// Configure the HTTP request pipeline.
-			app.UseAuthentication();
-			app.UseAuthorization();
+			
 
 			app.Use(async (httpContext, _next) =>
             {
@@ -138,8 +137,11 @@ namespace Talabat.APIS
 
 			app.UseCors("MyPolicy");
 
+			app.MapControllers();
 
-			app.MapControllers(); 
+			app.UseAuthentication();
+
+			app.UseAuthorization();
 			#endregion
 
 			app.Run();
