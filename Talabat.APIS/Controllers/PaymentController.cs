@@ -8,18 +8,18 @@ using Talabat.Core.Services.Contract;
 namespace Talabat.APIS.Controllers
 {
 	[Authorize]
-	public class PaymentsController : BaseApiController
+	public class PaymentController : BaseApiController
 	{
 		private readonly IPaymentService _paymentService;
 
-		public PaymentsController(IPaymentService paymentService)
+		public PaymentController(IPaymentService paymentService)
 		{
 			_paymentService = paymentService;
 		}
 
 		[ProducesResponseType(typeof(CustomerBasket), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-		[HttpGet("{basketId}")]
+		[HttpPost("{basketId}")]
 		public async Task<ActionResult<CustomerBasket>> CreateOrUpdatePaymentIntent(string basketId)
 		{
 			var basket = await _paymentService.CreateOrUpdatePaymentIntent(basketId);
