@@ -11,7 +11,7 @@ using Talabat.Core.Services.Contract;
 
 namespace Talabat.APIS.Controllers
 {
-	[Authorize]
+	
 	public class PaymentController : BaseApiController
 	{
 		private readonly IPaymentService _paymentService;
@@ -24,7 +24,7 @@ namespace Talabat.APIS.Controllers
 			_paymentService = paymentService;
 			_logger = logger;
 		}
-
+		[Authorize]
 		[ProducesResponseType(typeof(CustomerBasket), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
 		[HttpPost("{basketId}")]
