@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Talabat.Core.Services.Contract
 {
-	internal interface IResponseCacheService
+	public interface IResponseCacheService
 	{
+		Task CacheResponeAsync(string Key, object Response, TimeSpan timeToLive);
+		Task<string?> GetCacheResponseAsync(string Key);
 	}
 }

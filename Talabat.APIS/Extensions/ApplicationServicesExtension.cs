@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Identity;
 using Talabat.Core.Entities.Identity;
 using Talabat.Infrastructure._Identity;
 using Talabat.Service.PaymentService;
+using Talabat.Service.CacheService;
 
 namespace Talabat.APIS.Extensions
 {
@@ -30,6 +31,8 @@ namespace Talabat.APIS.Extensions
     {
         public static IServiceCollection AddApplicationsService(this IServiceCollection services)
         {
+			services.AddSingleton(typeof(IResponseCacheService), typeof(ResponseCacheService));
+
             services.AddScoped<ExceptionMiddleware>();
 
 			services.AddScoped(typeof(IPaymentService), typeof(PaymentService)); 
