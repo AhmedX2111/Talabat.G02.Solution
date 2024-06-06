@@ -19,6 +19,10 @@ using Talabat.Service.AuthService;
 using Talabat.Core;
 using Talabat.Service.OrderService;
 using Talabat.Service.ProductService;
+using Microsoft.AspNetCore.Identity;
+using Talabat.Core.Entities.Identity;
+using Talabat.Infrastructure._Identity;
+using Talabat.Service.PaymentService;
 
 namespace Talabat.APIS.Extensions
 {
@@ -27,6 +31,8 @@ namespace Talabat.APIS.Extensions
         public static IServiceCollection AddApplicationsService(this IServiceCollection services)
         {
             services.AddScoped<ExceptionMiddleware>();
+
+			services.AddScoped(typeof(IPaymentService), typeof(PaymentService)); 
 
 			services.AddScoped<IProductService, ProductService>();
 
@@ -41,7 +47,7 @@ namespace Talabat.APIS.Extensions
             services.AddAutoMapper(typeof(MappingProfiles));
 
             services.Configure<ApiBehaviorOptions>(options =>
-             {
+            {
                 options.InvalidModelStateResponseFactory = (actionContext) =>
                 {
                     var errors = actionContext.ModelState.Where(P => P.Value.Errors.Count > 0)
@@ -54,12 +60,14 @@ namespace Talabat.APIS.Extensions
                     };
                     return new BadRequestObjectResult(response);
                 };
-             }
+            }
             );
             return services;
         }
 		public static IServiceCollection AddAuthServices(this IServiceCollection services, IConfiguration configuration)
 		{
+			services.AddIdentity<ApplicationUser, IdentityRole>()
+					.AddEntityFrameworkStores<ApplicationIdentityDbContext>();
 
 			services.AddAuthentication(options =>
 			{
@@ -86,4 +94,6 @@ namespace Talabat.APIS.Extensions
 
 		}
 	}
+
+	
 }
